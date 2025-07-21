@@ -102,8 +102,50 @@ export const getEventsById = async (req, res) => {
       message: `Event by ${id} - fetched successfully`,
       eventExist,
     });
-    console.log(id);
   } catch (error) {
     return res.status(500).json({ message: error.message });
   }
+};
+
+//update event
+export const updateEvent = async (req, res) => {
+  try {
+    const id = req.params.id;
+    const eventExist = await Events.findById(id);
+    if (!eventExist) {
+      return res.status(404).json({
+        success: false,
+        message: "Event not found",
+      });
+    }
+    const updatedEvents = await Events.findByIdAndUpdate(id, req.body, {
+      new: true,
+    });
+    return res.status(200).json({
+      success: true,
+      message: `Event by ${id} - updated successfully`,
+      updatedEvents,
+    });
+  } catch (error) {
+    return res.status(500).json({
+      message: error.message,
+    });
+  }
+};
+
+export const deleteEvent = async (req, res) => {
+  const id = req.params.id;
+  const eventExist = await Events.findById(id);
+
+  if (!eventExist) {
+    return res.status(404).json({
+      success: false,
+      message: "Event not found",
+    });
+  }
+  await Events.findByIdAndDelete(id);
+  return res.status(200).json({
+    success: true,
+    message: `Event by ${id} - deleted successfully`,
+  });
 };
